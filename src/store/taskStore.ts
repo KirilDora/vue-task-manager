@@ -25,8 +25,8 @@ export const useTaskStore = defineStore("tasks", {
       this.tasks = newTasks;
       this.saveTasks();
     },
-    async loadFromGitHub(repository: string) {
-      const tasks = await fetchGitHubTasks(repository);
+    async loadFromGitHub(username: string = "facebook", repository: string) {
+      const tasks = await fetchGitHubTasks(username, repository);
       this.tasks = tasks;
       this.saveTasks();
     },

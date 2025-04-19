@@ -6,3 +6,8 @@ export interface Project {
   createdAt: string;
   description?: string;
 }
+
+export interface FilterOptions {
+  search: string;
+  status: string;
+}

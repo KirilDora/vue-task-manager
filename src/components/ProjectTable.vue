@@ -4,6 +4,14 @@ import { useRouter } from "vue-router";
 import { onMounted, ref, computed } from "vue";
 import Resizable from "vue-resizable";
 import ModalForm from "./ModalForm.vue";
+import { type Project } from "../models/Project";
+import { filterAndSortProjects } from "../utils/projectUtils";
+import { PROJECT_STATUSES } from "../constants/projectStatuses";
+
+const props = defineProps<{
+  projects: Project[];
+  username: string;
+}>();
 
 const router = useRouter();
 const projectStore = useProjectStore();
@@ -18,8 +26,8 @@ onMounted(() => {
   projectStore.loadProjects();
 });
 
-function goToProject(name: string) {
-  router.push(`/project/${name}`);
+function goToProject(projectName: string) {
+  router.push(`/tasks/${props.username}/${projectName}`);
 }
 
 function setSort(key: string) {
@@ -32,35 +40,41 @@ function setSort(key: string) {
 }
 
 const filteredProjects = computed(() => {
-  let list = projectStore.projects;
+  return filterAndSortProjects(
+    props.projects,
+    { search: search.value, status: statusFilter.value },
+    sortKey.value,
+    sortAsc.value
+  );
+  // let list = projectStore.projects;
 
-  if (search.value) {
-    list = list.filter((project) =>
-      project.name.toLowerCase().includes(search.value.toLowerCase())
-    );
-  }
+  // if (search.value) {
+  //   list = list.filter((project) =>
+  //     project.name.toLowerCase().includes(search.value.toLowerCase())
+  //   );
+  // }
 
-  if (statusFilter.value) {
-    list = list.filter((project) => project.status === statusFilter.value);
-  }
+  // if (statusFilter.value) {
+  //   list = list.filter((project) => project.status === statusFilter.value);
+  // }
 
-  list = [...list].sort((a, b) => {
-    const key = sortKey.value as keyof typeof a;
-    const aVal = a[key];
-    const bVal = b[key];
+  // list = [...list].sort((a, b) => {
+  //   const key = sortKey.value as keyof typeof a;
+  //   const aVal = a[key];
+  //   const bVal = b[key];
 
-    if (typeof aVal === "string") {
-      return sortAsc.value
-        ? aVal.localeCompare(bVal as string)
-        : String(bVal).localeCompare(aVal);
-    }
+  //   if (typeof aVal === "string") {
+  //     return sortAsc.value
+  //       ? aVal.localeCompare(bVal as string)
+  //       : String(bVal).localeCompare(aVal);
+  //   }
 
-    return sortAsc.value
-      ? (aVal as number) - (bVal as number)
-      : (bVal as number) - (aVal as number);
-  });
+  //   return sortAsc.value
+  //     ? (aVal as number) - (bVal as number)
+  //     : (bVal as number) - (aVal as number);
+  // });
 
-  return list;
+  // return list;
 });
 </script>
 

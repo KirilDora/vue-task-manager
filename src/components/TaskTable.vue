@@ -6,10 +6,15 @@ import draggable from "vuedraggable";
 import ModalForm from "./ModalForm.vue";
 import Resizable from "vue-resizable";
 import type { Task, TaskStatus } from "../models/Task";
+import { TASK_STATUSES, STATUS_LABELS } from "../constants/taskStatuses";
+import { filterAndSortTasks } from "../utils/taskUtils";
 
 const taskStore = useTaskStore();
 const route = useRoute();
 const projectName = String(route.params.name);
+const props = defineProps<{
+  tasks: Task[];
+}>();
 
 const assigneeFilter = ref("");
 const statusFilter = ref<TaskStatus | "">("");
@@ -17,46 +22,18 @@ const sortKey = ref<"deadline" | "status">("deadline");
 const sortAsc = ref(true);
 const showModal = ref(false);
 
-// Статуси
-const statuses: TaskStatus[] = ["todo", "in_progress", "done"];
-const statusLabels: Record<TaskStatus, string> = {
-  todo: "До виконання",
-  in_progress: "В процесі",
-  done: "Завершено",
-};
+const statuses = TASK_STATUSES;
+const statusLabels = STATUS_LABELS;
 
-// Фільтрація та сортування
 const getFilteredTasks = computed(() => {
-  let list = taskStore.getByProject(projectName);
-
-  if (assigneeFilter.value) {
-    list = list.filter((task) =>
-      task.assignee?.toLowerCase().includes(assigneeFilter.value.toLowerCase())
-    );
-  }
-
-  if (statusFilter.value) {
-    list = list.filter((task) => task.status === statusFilter.value);
-  }
-
-  return [...list].sort((a, b) => {
-    const aVal = a[sortKey.value];
-    const bVal = b[sortKey.value];
-
-    if (typeof aVal === "string" && typeof bVal === "string") {
-      return sortAsc.value
-        ? aVal.localeCompare(bVal)
-        : bVal.localeCompare(aVal);
-    }
-
-    const aNum = typeof aVal === "string" ? Date.parse(aVal) : aVal;
-    const bNum = typeof bVal === "string" ? Date.parse(bVal) : bVal;
-
-    return sortAsc.value ? aNum - bNum : bNum - aNum;
-  });
+  return filterAndSortTasks(
+    props.tasks,
+    { assignee: assigneeFilter.value, status: statusFilter.value },
+    sortKey.value,
+    sortAsc.value
+  );
 });
 
-// Групування за статусом
 const groupedTasks = computed(() => {
   const groups: Record<TaskStatus, Task[]> = {
     todo: [],
@@ -102,9 +79,7 @@ onMounted(() => {
 
 watch(
   () => taskStore.tasks,
-  () => {
-    // реактивне оновлення через computed
-  },
+  () => {},
   { deep: true }
 );
 </script>

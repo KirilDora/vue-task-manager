@@ -6,9 +6,9 @@ export async function fetchGitHubProjects(
 ): Promise<Project[]> {
   try {
     const response = await axios.get(
-      `https://api.github.com/users/${username}/repos`
+      `http://localhost:4400/api/projects/${username}`
     );
-    const repos = response.data();
+    const repos = response.data;
 
     return repos.map((repo: any) => ({
       id: repo.id,
@@ -23,12 +23,16 @@ export async function fetchGitHubProjects(
   }
 }
 
-export async function fetchGitHubTasks(repoName: string) {
+export async function fetchGitHubTasks(
+  username: string = "facebook",
+  repoName: string
+) {
   try {
     const response = await axios.get(
-      `https://api.github.com/repos/facebook/${repoName}/issues`
+      `http://localhost:4400/api/tasks/${username}/${repoName}`
     );
     const tasks = response.data;
+
     return tasks.map((task: any) => {
       const deadline = new Date();
       const daysToAdd = Math.floor(Math.random() * 14) + 1;
