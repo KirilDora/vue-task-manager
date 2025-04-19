@@ -46,35 +46,6 @@ const filteredProjects = computed(() => {
     sortKey.value,
     sortAsc.value
   );
-  // let list = projectStore.projects;
-
-  // if (search.value) {
-  //   list = list.filter((project) =>
-  //     project.name.toLowerCase().includes(search.value.toLowerCase())
-  //   );
-  // }
-
-  // if (statusFilter.value) {
-  //   list = list.filter((project) => project.status === statusFilter.value);
-  // }
-
-  // list = [...list].sort((a, b) => {
-  //   const key = sortKey.value as keyof typeof a;
-  //   const aVal = a[key];
-  //   const bVal = b[key];
-
-  //   if (typeof aVal === "string") {
-  //     return sortAsc.value
-  //       ? aVal.localeCompare(bVal as string)
-  //       : String(bVal).localeCompare(aVal);
-  //   }
-
-  //   return sortAsc.value
-  //     ? (aVal as number) - (bVal as number)
-  //     : (bVal as number) - (aVal as number);
-  // });
-
-  // return list;
 });
 </script>
 
